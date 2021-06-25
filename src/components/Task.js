@@ -3,12 +3,18 @@ import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br";
 import Icon from "react-native-vector-icons/FontAwesome";
+import commomStyles from "../commomStyles";
+import Swipeable from "react-native-gesture-handler/Swipeable";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default (props) => {
 	const TODAY = moment(props.estimateAt)
 		.locale("pt-br")
 		.format("ddd, D [de] MMMM");
-	const formatatedDate = moment;
+
+	const doneOrNotStyle = props.doneAt
+		? { textDecorationLine: "line-through" }
+		: {};
 
 	function getCheckView(doneAt) {
 		if (doneAt) {
@@ -21,16 +27,53 @@ export default (props) => {
 		return <View style={styles.pending}></View>;
 	}
 
+	const getRightContent = () => {
+		return (
+			<TouchableOpacity
+				style={styles.right}
+				onPress={() => console.warn("deletou direita")}
+			>
+				<Icon name="trash" size={30} color={"#fff"} />
+			</TouchableOpacity>
+		);
+	};
+
+	const getLeftContent = () => {
+		return (
+			<TouchableOpacity style={styles.left}>
+				<Icon
+					name="trash"
+					size={30}
+					color={"#fff"}
+					style={styles.excludeIcon}
+				/>
+				<Text style={styles.excludeText}>Excluir</Text>
+			</TouchableOpacity>
+		);
+	};
+
 	return (
-		<View style={styles.container}>
-			<TouchableWithoutFeedback>
-				<View style={styles.checkContainer}>{getCheckView(props.doneAt)}</View>
-			</TouchableWithoutFeedback>
-			<View>
-				<Text style={styles.desc}>{props.desc}</Text>
-				<Text style={styles.date}>{TODAY}</Text>
+		<Swipeable
+			renderRightActions={getRightContent}
+			renderLeftActions={getLeftContent}
+			onSwipeableLeftOpen={() => {
+				console.warn("deletou esquerda");
+			}}
+			leftThreshold={150}
+			// friction={2}
+		>
+			<View style={styles.container}>
+				<TouchableWithoutFeedback>
+					<View style={styles.checkContainer}>
+						{getCheckView(props.doneAt)}
+					</View>
+				</TouchableWithoutFeedback>
+				<View>
+					<Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
+					<Text style={styles.date}>{TODAY}</Text>
+				</View>
 			</View>
-		</View>
+		</Swipeable>
 	);
 };
 
@@ -64,5 +107,37 @@ const styles = StyleSheet.create({
 		backgroundColor: "#4d7031",
 		alignItems: "center",
 		justifyContent: "center",
+	},
+	desc: {
+		fontSize: 16,
+		color: commomStyles.colors.mainText,
+	},
+	date: {
+		color: commomStyles.colors.subText,
+		fontSize: 12,
+	},
+	right: {
+		backgroundColor: "tomato",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "flex-end",
+		paddingHorizontal: 20,
+		flex: 1,
+	},
+	left: {
+		backgroundColor: "tomato",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "flex-end",
+		paddingHorizontal: 20,
+		flex: 1,
+	},
+	excludeIcon: {
+		marginLeft: 10,
+	},
+	excludeText: {
+		color: commomStyles.colors.secondary,
+		fontSize: 20,
+		margin: 10,
 	},
 });

@@ -15,10 +15,11 @@ import "moment/locale/pt-br";
 import commomStyles from "../commomStyles";
 import todayImage from "../../assets/imgs/today.jpg";
 import Task from "../components/Task";
+import AddTask from "./AddTask";
 
 const initialState = {
 	showDoneTasks: true,
-	showAddTask: false,
+	showAddTask: true,
 	visibleTasks: [],
 	tasks: [],
 };
@@ -29,6 +30,7 @@ export default class TaskList extends Component {
 		const TODAY = moment().locale("pt-br").format("LL");
 		return (
 			<View style={styles.container}>
+				<AddTask isVisible={this.state.showAddTask} />
 				<ImageBackground source={todayImage} style={styles.background}>
 					<View style={styles.iconBar}>
 						<TouchableOpacity>
