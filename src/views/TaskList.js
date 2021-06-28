@@ -12,6 +12,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Constants from "expo-constants";
 import moment from "moment";
 import "moment/locale/pt-br";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import commomStyles from "../commomStyles";
 import todayImage from "../../assets/imgs/today.jpg";
@@ -20,18 +21,41 @@ import AddTask from "./AddTask";
 
 const initialState = {
 	showDoneTasks: true,
-	showAddTask: true,
+	showAddTask: false,
 	visibleTasks: [],
 	tasks: [],
 };
 export default class TaskList extends Component {
 	state = { ...initialState };
 
+	componentDidMount = async () => {};
+
+	filterTasks = async () => {
+		// await AsyncStorage.setItem("tasksState", JSON.stringify(this.state));
+		// const stateString = await AsyncStorage.getItem("tasksState");
+	};
+
+	toggleFilter = () => {};
+
 	addTask = (newTask) => {
 		if (!newTask.desc || !newTask.desc.trim()) {
 			Alert.alert("Dados inválidos", "Descrição não informada!");
 		}
+
+		let tasks = [...this.state.tasks];
+		tasks.push({
+			id: Math.random(),
+			desc: newTask.desc,
+			estimateAt: newTask.date,
+			doneAt: null,
+		});
+
+		this.setState({ tasks, showAddTask: false }, this.filterTasks);
 	};
+
+	toggleTask = (taskId) => {};
+
+	deleteTasl = (taskID) => {};
 
 	render() {
 		const TODAY = moment().locale("pt-br").format("LL");
@@ -40,7 +64,7 @@ export default class TaskList extends Component {
 				<AddTask isVisible={this.state.showAddTask} onSave={this.addTask} />
 				<ImageBackground source={todayImage} style={styles.background}>
 					<View style={styles.iconBar}>
-						<TouchableOpacity>
+						<TouchableOpacity onPress={this.toggleFilter}>
 							<Icon
 								name={this.state.showDoneTasks ? "eye" : "eye-slash"}
 								size={30}
@@ -59,16 +83,18 @@ export default class TaskList extends Component {
 						estimateAt={new Date()}
 						doneAt={new Date()}
 					/>
-					<Task desc="Lavar Roupa" estimateAt={new Date()} />
-					<Task desc="Estudar" estimateAt={new Date()} doneAt={new Date()} />
-
-					{/* <FlatList
-						data={this.state.visibleTasks}
+					<FlatList
+						data={this.state.tasks}
 						keyExtractor={(item) => item.id}
-						renderItem={Component}
-					/> */}
+						renderItem={({ item }) => <Task {...item} />}
+					/>
 				</View>
-				<TouchableOpacity style={styles.addButton}>
+				<TouchableOpacity
+					onPress={() => {
+						this.setState({ showAddTask: true });
+					}}
+					style={styles.addButton}
+				>
 					<Icon name="plus" size={30} color={commomStyles.colors.secondary} />
 				</TouchableOpacity>
 			</View>
