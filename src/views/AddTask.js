@@ -22,6 +22,51 @@ const initialState = {
 export default class AddTask extends Component {
 	state = { ...initialState };
 
+	save = () => {
+		const newTask = { ...this.state };
+
+		// if (this.props.onSave) {
+		// 	this.props.onSave(newTask);
+		// }
+
+		this.props.onSave && this.props.onSave(newTask);
+
+		this.setState({ ...initialState });
+	};
+
+	getDateTimePicker = () => {
+		let datePicker = (
+			<DateTimePicker
+				value={this.state.date}
+				onChange={(event, date) => {
+					if (date) {
+						this.setState({ date, showDatePicker: false });
+					}
+				}}
+				mode="date"
+				// display="spinner"
+			/>
+		);
+		const dateString = moment(this.state.date).format("LL");
+
+		if (Platform.OS == "android") {
+			datePicker = (
+				<View>
+					<TouchableOpacity
+						onPress={() => {
+							this.setState({ showDatePicker: true });
+						}}
+					>
+						<Text>{dateString}</Text>
+					</TouchableOpacity>
+					{this.state.showDatePicker && datePicker}
+				</View>
+			);
+		}
+
+		return datePicker;
+	};
+
 	render() {
 		return (
 			<Modal
@@ -39,13 +84,17 @@ export default class AddTask extends Component {
 						placeholder="informe a descricao"
 						onChangeText={(desc) => this.setState({ desc })}
 						value={this.state.desc}
-					></TextInput>
+					/>
+					{this.getDateTimePicker()}
+
 					<View style={styles.buttons}>
 						<TouchableOpacity>
 							<Text style={styles.button}>Cancelar</Text>
 						</TouchableOpacity>
 						<TouchableOpacity>
-							<Text style={styles.button}>Salvar</Text>
+							<Text style={styles.button} onPress={this.save}>
+								Salvar
+							</Text>
 						</TouchableOpacity>
 					</View>
 				</View>

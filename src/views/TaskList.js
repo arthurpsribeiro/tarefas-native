@@ -5,6 +5,7 @@ import {
 	StyleSheet,
 	ImageBackground,
 	TouchableOpacity,
+	Alert,
 	FlatList,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -26,11 +27,17 @@ const initialState = {
 export default class TaskList extends Component {
 	state = { ...initialState };
 
+	addTask = (newTask) => {
+		if (!newTask.desc || !newTask.desc.trim()) {
+			Alert.alert("Dados inválidos", "Descrição não informada!");
+		}
+	};
+
 	render() {
 		const TODAY = moment().locale("pt-br").format("LL");
 		return (
 			<View style={styles.container}>
-				<AddTask isVisible={this.state.showAddTask} />
+				<AddTask isVisible={this.state.showAddTask} onSave={this.addTask} />
 				<ImageBackground source={todayImage} style={styles.background}>
 					<View style={styles.iconBar}>
 						<TouchableOpacity>
