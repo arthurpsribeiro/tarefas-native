@@ -28,14 +28,33 @@ const initialState = {
 export default class TaskList extends Component {
 	state = { ...initialState };
 
-	componentDidMount = async () => {};
+	componentDidMount = async () => {
+		const stateString = await AsyncStorage.getItem("taskState");
+		const state = JSON.parse(stateString) || initialState;
 
-	filterTasks = async () => {
-		// await AsyncStorage.setItem("tasksState", JSON.stringify(this.state));
-		// const stateString = await AsyncStorage.getItem("tasksState");
+		this.setState(state, this.filterTasks);
 	};
 
-	toggleFilter = () => {};
+	toggleFilter = () => {
+		this.setState(
+			{ showDoneTasks: !this.state.showDoneTasks },
+			this.filterTasks
+		);
+	};
+
+	filterTasks = () => {
+		let visibleTasks = null;
+
+		if (this.state.showDoneTasks) {
+			visibleTasks = [...this.state.tasks];
+		} else {
+			// const pending = (task) => task.doneAt == null;
+			visibleTasks = this.state.tasks.filter((task) => task.doneAt == null);
+		}
+
+		this.setState({ visibleTasks });
+		AsyncStorage.setItem("taskState", JSON.stringify(this.state));
+	};
 
 	addTask = (newTask) => {
 		if (!newTask.desc || !newTask.desc.trim()) {
@@ -53,9 +72,20 @@ export default class TaskList extends Component {
 		this.setState({ tasks, showAddTask: false }, this.filterTasks);
 	};
 
-	toggleTask = (taskId) => {};
+	toggleTask = (taskId) => {
+		const tasks = [...this.state.tasks];
+		tasks.forEach((task) => {
+			if (task.id == taskId) {
+				task.doneAt = task.doneAt ? null : new Date();
+			}
+		});
+		this.setState({ tasks }, this.filterTasks);
+	};
 
-	deleteTasl = (taskID) => {};
+	deleteTask = (id) => {
+		const tasks = this.state.tasks.filter((task) => task.id !== id);
+		this.setState({ tasks }, this.filterTasks);
+	};
 
 	render() {
 		const TODAY = moment().locale("pt-br").format("LL");
@@ -84,15 +114,16 @@ export default class TaskList extends Component {
 					</View>
 				</ImageBackground>
 				<View style={styles.containerList}>
-					<Task
-						desc="Assistir Filme"
-						estimateAt={new Date()}
-						doneAt={new Date()}
-					/>
 					<FlatList
-						data={this.state.tasks}
+						data={this.state.visibleTasks}
 						keyExtractor={(item) => item.id}
-						renderItem={({ item }) => <Task {...item} />}
+						renderItem={({ item }) => (
+							<Task
+								{...item}
+								onDelete={this.deleteTask}
+								onToggleTask={this.toggleTask}
+							/>
+						)}
 					/>
 				</View>
 				<TouchableOpacity

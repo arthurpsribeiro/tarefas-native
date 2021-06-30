@@ -37,7 +37,6 @@ export default class AddTask extends Component {
 	getDateTimePicker = () => {
 		let datePicker = (
 			<DateTimePicker
-				style={styles.date}
 				value={this.state.date}
 				onChange={(event, date) => {
 					if (date) {
@@ -58,7 +57,7 @@ export default class AddTask extends Component {
 							this.setState({ showDatePicker: true });
 						}}
 					>
-						<Text>{dateString}</Text>
+						<Text style={styles.date}>{dateString}</Text>
 					</TouchableOpacity>
 					{this.state.showDatePicker && datePicker}
 				</View>
@@ -142,6 +141,6 @@ const styles = StyleSheet.create({
 	},
 	date: {
 		fontSize: 20,
-		marginLeft: 5,
+		marginLeft: 15,
 	},
 });

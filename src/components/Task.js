@@ -8,9 +8,9 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default (props) => {
-	const TODAY = moment(props.estimateAt)
-		.locale("pt-br")
-		.format("ddd, D [de] MMMM");
+	const date = props.doneAt ? props.doneAt : props.estimateAt;
+
+	const TODAY = moment(date).locale("pt-br").format("ddd, D [de] MMMM");
 
 	const doneOrNotStyle = props.doneAt
 		? { textDecorationLine: "line-through" }
@@ -31,7 +31,7 @@ export default (props) => {
 		return (
 			<TouchableOpacity
 				style={styles.right}
-				onPress={() => console.warn("deletou direita")}
+				onPress={() => props.onDelete && props.onDelete(props.id)}
 			>
 				<Icon name="trash" size={30} color={"#fff"} />
 			</TouchableOpacity>
@@ -57,13 +57,13 @@ export default (props) => {
 			renderRightActions={getRightContent}
 			renderLeftActions={getLeftContent}
 			onSwipeableLeftOpen={() => {
-				console.warn("deletou esquerda");
+				props.onDelete && props.onDelete(props.id);
 			}}
 			leftThreshold={150}
 			// friction={2}
 		>
 			<View style={styles.container}>
-				<TouchableWithoutFeedback>
+				<TouchableWithoutFeedback onPress={() => props.onToggleTask(props.id)}>
 					<View style={styles.checkContainer}>
 						{getCheckView(props.doneAt)}
 					</View>
