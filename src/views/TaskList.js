@@ -61,7 +61,13 @@ export default class TaskList extends Component {
 		const TODAY = moment().locale("pt-br").format("LL");
 		return (
 			<View style={styles.container}>
-				<AddTask isVisible={this.state.showAddTask} onSave={this.addTask} />
+				<AddTask
+					isVisible={this.state.showAddTask}
+					onSave={this.addTask}
+					onCancel={() => {
+						this.setState({ showAddTask: false });
+					}}
+				/>
 				<ImageBackground source={todayImage} style={styles.background}>
 					<View style={styles.iconBar}>
 						<TouchableOpacity onPress={this.toggleFilter}>

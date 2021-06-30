@@ -37,6 +37,7 @@ export default class AddTask extends Component {
 	getDateTimePicker = () => {
 		let datePicker = (
 			<DateTimePicker
+				style={styles.date}
 				value={this.state.date}
 				onChange={(event, date) => {
 					if (date) {
@@ -74,7 +75,7 @@ export default class AddTask extends Component {
 				visible={this.props.isVisible}
 				animationType={"slide"}
 			>
-				<TouchableWithoutFeedback>
+				<TouchableWithoutFeedback onPress={this.props.onCancel}>
 					<View style={styles.background}></View>
 				</TouchableWithoutFeedback>
 				<View style={styles.container}>
@@ -88,7 +89,7 @@ export default class AddTask extends Component {
 					{this.getDateTimePicker()}
 
 					<View style={styles.buttons}>
-						<TouchableOpacity>
+						<TouchableOpacity onPress={this.props.onCancel}>
 							<Text style={styles.button}>Cancelar</Text>
 						</TouchableOpacity>
 						<TouchableOpacity>
@@ -98,7 +99,7 @@ export default class AddTask extends Component {
 						</TouchableOpacity>
 					</View>
 				</View>
-				<TouchableWithoutFeedback>
+				<TouchableWithoutFeedback onPress={this.props.onCancel}>
 					<View style={styles.background}></View>
 				</TouchableWithoutFeedback>
 			</Modal>
@@ -138,5 +139,9 @@ const styles = StyleSheet.create({
 		color: commomStyles.colors.today,
 		margin: 20,
 		marginRight: 30,
+	},
+	date: {
+		fontSize: 20,
+		marginLeft: 5,
 	},
 });
